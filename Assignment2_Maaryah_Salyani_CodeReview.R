@@ -19,9 +19,9 @@ three_digit <- as.numeric (readline(prompt = "enter a three digit positive numbe
 #' is a number using is.numeric and as.numeric, then converting the input to an integer
 #' after it passes those conditions. This could also be integrated into the if statement
 #' below. For example: 
-  #' if ((is.numeric(as.numeric(userinput))) &
-  #'    (nchar(userinput) == 3) &  
-  #'    (as.numeric(userinput) >= 0)) { 
+  #' if ((is.numeric(as.numeric(three_digit))) &
+  #'    (nchar(three_digit) == 3) &  
+  #'    (as.numeric(three_digit) >= 0)) { 
 #' Furthermore, our style guide says that there should not be a space between a function call 
 #' and the opening paranthesis - in this case, the as.numeric() function.
 
