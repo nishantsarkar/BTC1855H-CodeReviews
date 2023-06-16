@@ -1,4 +1,5 @@
 # Assignment-2
+# REVIEWED by Nishant Sarkar
 setwd("~/Desktop/coding_course")
 #I have just set my working directory
 
@@ -6,6 +7,15 @@ three_digit <- as.numeric (readline(prompt = "enter a three digit positive numbe
 
 #I have prompted the user to enter a three digit positive number
 # the readline function is used to read a line of text written by the user in the console
+
+#' REVIEW: Good work using Readline here to get user input. A couple notes: Immediately
+#' converting the readline input to a numeric doesn't allow the detection of non-numeric
+#' inputs - there doesn't appear to be a check for whether the input is a number, and if 
+#' I input letters, the code breaks. This could be ameliorated by checking if the input
+#' is a number using is.numeric and as.numeric, then converting the input to an integer
+#' after it passes those conditions. Furthermore, our style guide says that there should
+#' not be a space between a function call and the opening paranthesis - in this case, 
+#' the as.numeric function.
 
 # ifelse statement to check if number is positive and three digits in the first condition 
 if (three_digit > 0 && nchar(three_digit) == 3) { 
