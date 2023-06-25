@@ -3,6 +3,10 @@
 # REVIEWED by Nishant Sarkar
 # Code review comments tagged with NS
 
+#' NS: Your Github repository looks good, with frequent commits. I'd advise that
+#' you label your commit messages a bit more descriptively in case you need to
+#' revert back to a previous version. 
+
 # Load word list found in txt. file within Assignment_3 Repository
 # Must save this file within working directory
 wordlist <- readLines("Dictionary.txt")
@@ -11,17 +15,35 @@ wordlist <- readLines("Dictionary.txt")
 get_secret_word <- function(wordlist) {
   tolower(sample(wordlist, 1))
 }
+#' NS: Good use of sample() to load from Dictionary.txt. I'm not sure if having get_secret_word
+#' as a separate function is particularly more efficient in this code since it is
+#' only called once - the reset_game function could have just included a line to
+#' sample from the wordlist instead. 
 
 # Function to check if the user input is a valid letter
 valid_letter <- function(user_input) {
   grepl("^[a-zA-Z]$", user_input)
 }
 
+#' NS: Great use of grepl and regex to check whether or not the input string consists
+#' of alphabets using [a-zA-z] and checking whether there is only one input character
+#' using the ^ and $ anchors. If you wanted to avoid regex here, a partial solution 
+#' could be to check if user_input is present in the 'letters' vector in R, like so:
+  #' valid_letter <- function(user_input) {
+  #'   tolower(user_input) %in% letters
+  #' }
+#' Still, your method is thorough and all-encompassing. I tried to break it and failed!
+
 # Function to check if the user input is a valid command incase they want to type the whole word, restart the game or exit the game. 
 # To do this, the user can type "word" and hit enter if they want to type out the whole word instead of guessing single letters, "restart" to restart the entire game, and "exit" to leave the game. 
 valid_command <- function(input) {
   tolower(input) %in% c("word", "restart", "exit")
 }
+
+#' NS: This is a creative solution to also check for the additional commands you
+#' implemnented in this game. By checking whether 'input' corresponds to one
+#' of the commands in the vector, the program can recognize inputs other than
+#' single letters. Very descriptive notation here as well.
 
 # Function to reset the game variables
 reset_game <- function() {
@@ -30,6 +52,11 @@ reset_game <- function() {
   guessed_letters <<- character(0) # Initialize variables to store guessed letters during game and the number of wrong guesses
   wrong_guesses <<- 0
 }
+
+#' NS: Good use of double-headed arrows above to ensure that these assignments
+#' occur in the global environment and not within the function. Having reset_game()
+#' as a function also enables the additional functionality of letting the player
+#' reset the game if they want, which is great. 
 
 # Visually display the current state of the game for the user
 display_state <- function(secret_word, guessed_letters, wrong_guesses, max_wrong_guesses) {
@@ -46,26 +73,49 @@ display_state <- function(secret_word, guessed_letters, wrong_guesses, max_wrong
   cat("Wrong guesses:", wrong_guesses, "/", max_wrong_guesses, "\n")
 }
 
+#' NS: The display_state function is a great overall solution to providing a visual
+#' representation of the game's progress to players by showing the partially revealed
+#' word, the guessed letters, and the number of wrong guesses. If you wanted to avoid
+#' using a for loop and running it every turn, a solution could be to display the
+#' secret word as a vector of underscores corresponding to its length, and updating it
+#' as the player guesses correct letters. This could look like this:
+  #' revealed_word <- rep("_", word_length)
+  #' (...if statement...)
+  #'   revealed_word[strsplit(secret_word, "")[[1]] == user_input] <- user_input
+
 # Game loop control variable
 game_over <- FALSE
 
 # Introduction to the game
 cat("Welcome to Sanari's Hangman Game! The category is cities within Ontario, Canada. I hope you enjoy playing! \n")
 cat("You are allowed 10 guesses in total. If you would like to guess the whole word, simply type 'word'. If you would like to restart the game, type 'restart'. If you would like to exit the game, type 'exit'. Good luck!!\n")
+#' NS: Super minor, but I would mention that the player immediately loses if they
+#' fail to guess the whole word!
 
 # Set the maximum number of wrong guesses
 max_wrong_guesses <- 10
+
+#' NS: Good work initializing all your variables and notating them properly. It
+#' might be easier for you to keep initializations all in one place at the beginning
+#' of the script instead of throughout the code, so you can change them quickly. 
 
 # Reset the game initially
 reset_game()
 
 # Create a while loop to prompt user to enter a letter until the game is over or until they exit, or restart the game
 # Note: the user can only play the game once if they have successfully won. 
+#' NS: I really love tying your while loop to the game_over variable instead of
+#' something like the number of wrong guesses. This way, you can employ several
+#' different ways that the player can lose the game. Smart! 
 while (!game_over) {
   display_state(secret_word, guessed_letters, wrong_guesses, max_wrong_guesses)
+  #' NS: Super clean way to display the current state of the game and makes this
+  #' section of the code VERY readable. 
   
   # Prompt user to enter a letter or command
   guess <- tolower(readline("Please enter a letter or command (word/restart/exit): "))
+  #' NS: Minor, but I would name this variable something more descriptive as this
+  #' implies that it's the player's letter or word guess, not input command. 
   
   # Check if the input is a valid command
   if (valid_command(guess)) {
