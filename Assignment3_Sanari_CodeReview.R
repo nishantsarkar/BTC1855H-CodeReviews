@@ -29,9 +29,9 @@ valid_letter <- function(user_input) {
 #' of alphabets using [a-zA-z] and checking whether there is only one input character
 #' using the ^ and $ anchors. If you wanted to avoid regex here, a partial solution 
 #' could be to check if user_input is present in the 'letters' vector in R, like so:
-  #' valid_letter <- function(user_input) {
-  #'   tolower(user_input) %in% letters
-  #' }
+#'   valid_letter <- function(user_input) {
+#'     tolower(user_input) %in% letters
+#'   }
 #' Still, your method is thorough and all-encompassing. I tried to break it and failed!
 
 # Function to check if the user input is a valid command incase they want to type the whole word, restart the game or exit the game. 
@@ -79,9 +79,9 @@ display_state <- function(secret_word, guessed_letters, wrong_guesses, max_wrong
 #' using a for loop and running it every turn, a solution could be to display the
 #' secret word as a vector of underscores corresponding to its length, and updating it
 #' as the player guesses correct letters. This could look like this:
-  #' revealed_word <- rep("_", word_length)
-  #' (...if statement...)
-  #'   revealed_word[strsplit(secret_word, "")[[1]] == user_input] <- user_input
+#'   revealed_word <- rep("_", word_length)
+#'   (...if statement...)
+#'     revealed_word[strsplit(secret_word, "")[[1]] == user_input] <- user_input
 
 # Game loop control variable
 game_over <- FALSE
@@ -119,6 +119,9 @@ while (!game_over) {
   
   # Check if the input is a valid command
   if (valid_command(guess)) {
+    #' NS: valid_command comes in handy here as a great way to check if the input
+    #' is valid. Again, contributes to the neatness and readability of this section
+    #' of the code, while fulfilling the input validity requirement. Awesome!
     if (guess == "word") {
       
       # Prompt user to enter the entire word
@@ -133,6 +136,7 @@ while (!game_over) {
     } else if (guess == "restart") {
       
       # Reset the game
+      #' NS: Again, great functionality to reset the game here!
       reset_game()
       cat("Game restarted. Good luck!!\n")
     } else if (guess == "exit") {
@@ -143,6 +147,11 @@ while (!game_over) {
     }
     next
   }
+  
+  #' NS: The nested while/if-else statements here work well and suit your purpose.
+  #' These statements are properly indented, which contribute to code readability.
+  #' Consider leaving a comment on the closing bracket of these statements, so you
+  #' know which brackets correspond to which blocks of code. 
   
   # Check if the input is a valid letter
   if (!valid_letter(guess)) {
@@ -155,6 +164,10 @@ while (!game_over) {
     cat("You already guessed that letter. Please try again. \n")
     next
   }
+  
+  #' NS: These checks fulfil the requirements for input validity. The additional
+  #' functionality to ensure that the player cannot re-guess already guessed letters
+  #' is a nice touch, with a very simple line of code. 
   
   # Add the guess to the guessed letters
   guessed_letters <- c(guessed_letters, guess)
@@ -173,6 +186,25 @@ while (!game_over) {
     cat("Congratulations! You have successfully guessed the secret word! YAY!! \n")
     game_over <- TRUE
   }
+  #' NS: I like the use of all() here, which is applied to the result of the 
+  #' %in% operation to check if all elements of the resulting logical vector
+  #' are true. You could also do this by checking if there are no more blank
+  #' spaces in the guessed_letters vector. For example, if the blank spaces are
+  #' "_" characters, you could do:
+  #'   if (("_" %in% guessed_letters == FALSE)) {
+  #'     (...remaining code...)
 }
 
 # END OF GAME
+
+#' NS: Great work! Here are some overall comments:
+#' The code fulfills all of the requirements set out for us, and also adds some
+#' additional functionality like the ability to replay the game and the ability
+#' to guess the whole word if desired. The code is structured well and adheres
+#' to our style guide. The code properly checks for incorrect inputs (numbers,
+#' punctuation, guesses longer than one character, or some combination of these)
+#' and ensures that they do not break the code. Also, the code did not throw an
+#' error during my testing. Finally, the code is very readable: it is properly
+#' commented/organized, and the use of plenty of functions keeps the code clean,
+#' particularly during the main game loop, and contributes to its readability. 
+#' The game was a lot of fun to play! Good work!
