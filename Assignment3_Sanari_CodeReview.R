@@ -1,5 +1,7 @@
 # Assignment 3 - Hangman Game
 # By: Sanari Wickramaratne
+# REVIEWED by Nishant Sarkar
+# Code review comments tagged with NS
 
 # Load word list found in txt. file within Assignment_3 Repository
 # Must save this file within working directory
