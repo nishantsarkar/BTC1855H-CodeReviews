@@ -207,10 +207,18 @@ hoax.country <- hoax.data %>%
   summarise(Hoax.Percentage = ((sum(is_hoax, na.rm=T)/n()) * 100)) %>%
   arrange(desc(Hoax.Percentage))
 
+# NS: Now realizing that my math was wrong here when I did this!
+
 # Preview of the table showing percentage of hoax sightings per country.
 # This is printed to console below (first 6 observations).
 # To see all the data please look at 'hoax.country' in the Environment tab.
 print(head(hoax.country))
+
+#' NS: Great table with accurate numbers. As noted above, your approach for imputing
+#' country names from the city column does come with some drawbacks; there are entries
+#' in this table like "caada", "upper", and "unincorporated". Again, I don't know how
+#' you could have done this any better though, and the majority of the table is very
+#' informative. 
 
 # ---- Adding another column to the dataset (report_delay) and populate with the time difference 
 # in days, between the date of the sighting and the date it was reported.  ---- 
@@ -230,10 +238,20 @@ time.diff <- hoax.data %>%
   mutate(report_delay = 
            ceiling(difftime(date_posted, datetime, units = "days")))
 
+#' NS:Good approach using difftime and ensuring your units are all correct. In my approach,
+#' I simply subtracted datetime from date_posted, which output the time difference in days;
+#' this approach could have been applied here as well (or maybe it only worked in my code
+#' because both variables were ymd?). I'll note that by rounding all of the outputs up, you
+#' lose the ability to see cases where "report_delay" = 0; these cases are also probably
+#' hoaxes since it doesn't make sense that a sighting was reported at the exact same time 
+#' the person saw it. Consequently, I think having days with decimal values is fine if it
+#' means catching these cases.
+
 # Preview of the new time.diff tibble is printed to console below (first 6 observations).
 # To see all the data please look at 'time.diff' in the Environment tab.
 print(head(time.diff))
 
+# NS: Looks good to me!
 
 # ---- Remove the rows where the sighting was reported before it happened. ----
 
@@ -246,9 +264,13 @@ print(head(time.diff))
 real.times <- time.diff %>%
   filter(!(report_delay < 0))
 
+# NS: Simple and effective operation here.
+
 # Preview of the new real.times tibble is printed to console below (first 6 observations).
 # To see all the data please look at 'real.times' in the Environment tab.
 print(head(real.times))
+
+# NS: Works as desired!
 
 # ---- Create a table reporting the average report_delay per country. ---- 
 
@@ -266,6 +288,8 @@ report.delay.country <- real.times %>%
 # To see all the data please look at 'report.delay.country' in the Environment tab.
 print(head(report.delay.country))
 
+#' NS: Again, looks great to me - same drawbacks as the previously mentioned table
+#' with respect to country names, but still a great solution. 
 
 # ---- Data Quality of: duration seconds column ----
 
@@ -274,6 +298,10 @@ print(head(report.delay.country))
 print(paste("Minimum Value for Duration Seconds:", min(real.times$duration.seconds)))
 print(paste("Maximum Value for Duration Seconds:", max(real.times$duration.seconds)))
 print(paste("Number of NA values:", sum(is.na(real.times$duration.seconds))))
+
+#' NS: Min and max values in the column are included in your summary function below,
+#' so the first two lines of code here aren't necessary. Good approach to see if the
+#' column has any NA values!
 
 #' From the minimum and maximum values we an see that the range of our data is very large.
 #' This will give us problems when trying to make a histogram... But what kind of problems?
@@ -299,6 +327,16 @@ summary(real.times$duration.seconds)
 # we have some values where log10() would give us a negative value. These are observations where the
 # duration.seconds is < 1. As such, we will first apply a ceiling function to these observations to
 # prevent having negative log10 numbers. This is the only manipulation we will do to our raw data.
+
+#' NS: I appreciate the detailed thought process here into the insights that the summary function
+#' gave you. However, I disagree that there is even a remote possibility that the largest duration.seconds
+#' values are legitimate sightings. The entry with a biggest duration.seconds value has a duration of 82.8 million
+#' seconds, which is 2.6 years - this is far too long for any UFO sighting to be! If you create a boxplot with
+#' the values in this column, you'll notice that there are 3 or 4 huge outliers that are heavily skewing the
+#' average of the dataset, all with very unrealistic values for a sighting to go on for. I think that if
+#' these omissions are properly noted with a reason for why an arbitrary threshold was imposed, your analysis
+#' can still be valid. Regardless, transforming your data with the log function was a good call to accuratly
+#' represent everything on the histogram.
 
 final.data <- real.times %>%
   mutate(duration.seconds = case_when(
@@ -334,3 +372,25 @@ final.data.bins <- final.data %>%
 barplot(table(final.data.bins$duration.bin), ylab = c("Frequency of Observation"),
         xlab = c("Observation Duration in Seconds"), cex.names=0.5, 
         main=c("Frequency of Observation Duration in Seconds"))
+
+#' NS: Interesting approach to improve your final graphic! I didn't think of transforming
+#' the continuous duration.seconds variable into categorically sorted bins; I think this
+#' is a great approach to make the barplot more comprehensible while still keeping very
+#' large duration.seconds values. 
+
+#' NS: OVERALL COMMENTS - Great work overall, Chris. Your code is structured well and
+#' adheres to all of the guidelines set out in our style guide. The code performs as
+#' expected and completes all of the requirements in our assignment, along with the bonus suggestion
+#' of imputing country information from the cities column. In general, the script is also
+#' very readable; it's indented properly and organized well with the comments. I think
+#' your solutions were super creative and I definitely learned a lot from reviewing your
+#' approaches here, so thanks for that!
+#' In future assignments, I'd recommend reducing the amount of separate objects that you load into
+#' the R workspace. For example, in this case, there are 11 sizeable tibbles loaded in
+#' the workspace after running all this code, of which I believe 7 are iterative modifications
+#' to the same tibble. This could become an issue when working with bigger datasets since everything
+#' is stored in RAM. 
+#' Also, while I appreciate the very descriptive commenting and the organizational benefits
+#' that come with it, the large blocks of comment text hamper readability sometimes. I'd
+#' advise that you remain detailed, but as concise as possible, with your notation of the code. 
+#' Overall, awesome work! 
