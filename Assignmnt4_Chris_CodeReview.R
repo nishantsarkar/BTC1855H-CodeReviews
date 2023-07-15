@@ -1,5 +1,7 @@
 # Assignment 4 - Aliens Are Coming!! 
 # ====================================
+# REVIEWED by Nishant Sarkar
+# Review comments denoted by NS: throughout script - overall comments at the end
 
 #' Note to User: Please ensure you have your working directly set accordingly.
 #' This script makes use of the data 'ufo_subset.csv'. Ensure that this file
@@ -14,6 +16,9 @@ library(tidyverse)
 #' package installed prior to running this script. For further information, please
 #' reference: https://www.tidyverse.org 
 
+#' NS: I appreciate you organizing your script so well with thorough comments, and
+#' indicating exactly what task you are working on.
+
 # Start of the Code
 
 # ---- Loading the Data ----
@@ -21,7 +26,9 @@ library(tidyverse)
 #' Below we are loading the 'ufo_subset.csv' file as a data frame by using read_delim(). 
 #' We pass in the argument delim="," to specify that this is a comma separated file.
 #' Note: read_csv() or read_csv2() from Tidyverse could have been used, but we decided to
-#' use the parent function read_delim() for the greatest parameter flexibility. 
+#' use the parent function read_delim() for the greatest parameter flexibility.
+
+# NS: Good call here as we were told the data was tab-delimited at first!
 
 raw.data <- read_delim("ufo_subset.csv", delim=",") 
 
@@ -30,6 +37,9 @@ raw.data <- read_delim("ufo_subset.csv", delim=",")
 #' This will ensure our column names do not have spaces or white spaces. In the console
 #' you will see that 'duration seconds' and 'duration hours min' have been renamed with
 #' periods instead of spaces, as these two original column names violated the tidyverse standards.
+
+#' NS: Great solution - I didn't notice this condition in the as_tibble function. Much
+#' more elegant and simple than the solution I used! 
 
 name.repaired <- as_tibble(raw.data, .name_repair = "universal")
 
@@ -46,6 +56,16 @@ print(head(name.repaired))
 #' the NA will be replaced with 'unknown'. If the value fo shape is not NA (default),
 #' the existing value of shape will be preserved. 
 
+#' NS: Good solution for cleaning the shapes column, and I appreciate the organized
+#' and indented code. One thing I'm now noticing is that you didn't make use of an 
+#' extended pipe to clean the original dataset, and instead did it in multiple 
+#' steps with several different named tibbles. While this is good for code 
+#' readibility, organization, and modification down the line, it also results 
+#' in the workplace being filled with many different tibbles, each with one 
+#' cleaning step performed on them. It may have been useful to pipe the same
+#' tibble through all the cleaning steps, ending with a tibble named "ufo.data.tidy"
+#' or something like that. 
+
 shapes.cleaned <- name.repaired %>% 
   mutate(shape = case_when(
     is.na(shape) ~ "unknown", 
@@ -54,6 +74,8 @@ shapes.cleaned <- name.repaired %>%
 # Preview of the new unknown shape values is printed to console below (first 6 observations).
 # To see all the data please look at 'shapes.cleaned' in the Environment tab.
 print(head(shapes.cleaned %>% filter(shape == "unknown")))
+# NS: Looks like it worked!
+
 
 # --- Removing Rows that Do Not Have Country Information ----
 #' What we want to achieve:
@@ -86,6 +108,15 @@ print(head(shapes.cleaned %>% filter(shape == "unknown")))
 #' empty whitespace (after trimming, for better accuracy). This is because we want these incomplete
 #' observations removed from our 'fixed.country' tibble.
 
+#' NS: Great approach to solving this problem - thanks StackOverflow! I had come up
+#' with a similar logical flow to solving this problem but I couldn't figure out the
+#' code - specifically because it seemed that the country codes that are already present
+#' in the data set are 2 characters (ca, us, etc). It doesn't appear that your code
+#' captures only the first two characters in the last parentheses, so the country
+#' names end up being a little longer (but that's totally fine; I didn't solve this
+#' problem at all!). I appreciate you noting down the specific shortcomings of this
+#' approach and the assumptions that come with it. 
+
 fixed.country <- shapes.cleaned %>%
   mutate(country = case_when(
     (trimws(country) == "" | is.na(country) &
@@ -106,6 +137,12 @@ print(head(fixed.country))
 #' These mutations have been assigned to a new tibble called 'fixed.time'. 
 #' The ymnd_hm() and dmy() functions are from lubridate and allow us to convert the strings
 #' to the appropritate date-time objects. 
+
+#' NS: Good job taking advantage of lubridate here. I'll note that with this approach,
+#' datetime is in ymd and date_posted is in dmy. This doesn't affect downstream operations,
+#' but to improve the cohesiveness of the dataset, it might have been beneficial to
+#' convert date_posted to ymd by adding a little code, like so:
+#'     (...)date_posted = as.Date(format(dmy(date_posted), "%Y-%m-%d")
 
 fixed.time <- fixed.country %>%
   mutate(datetime = ymd_hm(datetime)) %>%
@@ -145,6 +182,13 @@ hoax.data <- fixed.time %>%
     grepl("\\({2}.{0,}HOAX\\?*.{0,}\\){0,2}", toupper(comments), fixed = F) ~ TRUE,
     .default = FALSE
   ))
+
+#' NS: A simple and elegant approach to filtering out hoaxes. Good work ensuring that
+#' 'HOAX' is preceded somewhere with two opening parentheses to catch the NUFORC notes.
+#' When I did this, I had asked Dr. K what constitutes a 'hoax', and she said 'anything
+#' NUFORC thinks might not be a UFO' including other planets and 'possible' hoaxes. I
+#' don't think this will affect your approach since you made your assumptions and goals
+#' very clear, and modifying your grepl line to achieve this goal would be pretty straightforward. 
 
 # Preview of the new hoax.data tibble is printed to console below (first 6 observations).
 # To see all the data please look at 'hoax.data' in the Environment tab.
